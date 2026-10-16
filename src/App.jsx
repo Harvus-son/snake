@@ -55,7 +55,7 @@ export default function App() {
   const [sound, setSound] = useState(true);
   const [score, setScore] = useState(0);
   const [bananas, setBananas] = useState(0);
-  const [best, setBest] = useState(0);
+  const [best, setBest] = useState(() => Number(window.localStorage.getItem("jungleSnakeBest") || 0));
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState("Выбери уровень и нажми «Играть».");
   const [board, setBoard] = useState(() => createBoard("garden"));
@@ -108,7 +108,7 @@ export default function App() {
 
   const endGame = useCallback((text) => {
     syncStatus("over");
-    setBest((old) => Math.max(old, scoreRef.current));
+    setBest((old) => { const next = Math.max(old, scoreRef.current); window.localStorage.setItem("jungleSnakeBest", String(next)); return next; });
     setMessage(text);
   }, []);
 
@@ -194,7 +194,7 @@ export default function App() {
         scoreRef.current += 10;
         setScore(scoreRef.current);
         setBananas((n) => n + 1);
-        setBest((old) => Math.max(old, scoreRef.current));
+        setBest((old) => { const next = Math.max(old, scoreRef.current); window.localStorage.setItem("jungleSnakeBest", String(next)); return next; });
         const nextFruit = randomFruit(nextSnake, obstacles);
         fruitRef.current = nextFruit;
         setFruit(nextFruit);
